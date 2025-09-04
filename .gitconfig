@@ -1,0 +1,85 @@
+
+[user]
+    name = Marek Elmayan
+    email = marek.elmayan@theodo.com
+    useConfigOnly = true
+
+[init]
+    defaultBranch = main
+
+# Never create merge commits on pull; keep history linear
+[pull]
+    rebase = true
+    ff = only
+    autoStash = true
+
+[rebase]
+    autosquash = true
+    updateRefs = true
+    autostash = true
+
+[rerere]
+    enabled = true
+
+# Safer pushes and better tag behavior
+[push]
+    default = current
+    autoSetupRemote = true
+    followTags = true
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+    pruneTags = true
+    recurseSubmodules = on-demand
+
+# Helpful diffs & merges
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    renames = true
+
+[merge]
+    conflictStyle = zdiff3
+
+# Colors & status
+[color]
+    ui = auto
+
+[status]
+    submoduleSummary = true
+    showUntrackedFiles = all
+
+# Your editor & line endings (pick ONE of the core blocks below for your OS)
+[core]
+    editor = code --wait
+    excludesfile = ~/.gitignore_global
+    safecrlf = warn
+    # macOS/Linux:
+    autocrlf = input
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+
+# Quality-of-life
+[tag]
+    sort = version:refname
+
+[gc]
+    writeCommitGraph = true
+    pruneExpire = 30.days
+
+[help]
+    autocorrect = 10
+
+[alias]
+    autofixup = "!f() { \
+        COMMIT_HASH=$(git log --pretty=oneline | fzf | awk '{print $1}'); \
+        git commit --fixup $COMMIT_HASH; \
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash --autosquash -i $COMMIT_HASH^; \
+        }; f"
