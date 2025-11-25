@@ -79,7 +79,26 @@
 
 [alias]
     autofixup = "!f() { \
-        COMMIT_HASH=$(git log --pretty=oneline | fzf | awk '{print $1}'); \
+        SELECTED=$(git log --date=relative --decorate --color=always \
+            --pretty=format:'%C(yellow)%h %C(blue)%ad%C(reset) %C(green)%an%C(reset) %C(red)%d%C(reset) %s' \
+            | fzf --ansi --height=80% --reverse --border --margin=1 --padding=1 \
+                --prompt='fixup > ' --header='Select a commit (ENTER to proceed)' \
+                --info=inline --pointer='▶' --marker='✓'); \
+        [ -z \"$SELECTED\" ] && return; \
+        COMMIT_HASH=$(echo \"$SELECTED\" | sed -E 's/\\x1b\\[[0-9;]*m//g' | awk '{print $1}'); \
         git commit --fixup $COMMIT_HASH; \
         GIT_SEQUENCE_EDITOR=: git rebase --autostash --autosquash -i $COMMIT_HASH^; \
         }; f"
+    autofixup-no-verif = "!f() { \
+        SELECTED=$(git log --date=relative --decorate --color=always \
+            --pretty=format:'%C(yellow)%h %C(blue)%ad%C(reset) %C(green)%an%C(reset) %C(red)%d%C(reset) %s' \
+            | fzf --ansi --height=80% --reverse --border --margin=1 --padding=1 \
+                --prompt='fixup > ' --header='Select a commit (ENTER to proceed)' \
+                --info=inline --pointer='▶' --marker='✓'); \
+        [ -z \"$SELECTED\" ] && return; \
+        COMMIT_HASH=$(echo \"$SELECTED\" | sed -E 's/\\x1b\\[[0-9;]*m//g' | awk '{print $1}'); \
+        git commit --fixup $COMMIT_HASH --no-verify; \
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash --autosquash -i $COMMIT_HASH^; \
+        }; f"
+[coderabbit]
+	machineId = cli/2fd2e9a0e2824636b56cdb3d65279175
